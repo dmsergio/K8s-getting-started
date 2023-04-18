@@ -1,5 +1,9 @@
 # K8s Getting started
 
+## Kubernetes esquema
+
+![K8s](./kubernetes_schema.png)
+
 ## Minikube
 
 Cluster de Kubernetes en local, centrado para el aprendizaje y desarrollo.
