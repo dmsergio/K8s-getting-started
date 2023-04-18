@@ -104,3 +104,25 @@ Cluster de Kubernetes en local, centrado para el aprendizaje y desarrollo.
 - [Headlamp](https://minikube.sigs.k8s.io/docs/handbook/addons/headlamp)
 - [Ingress DNS](https://minikube.sigs.k8s.io/docs/handbook/addons/ingress-dns)
 - [Subiendo imágenes](https://minikube.sigs.k8s.io/docs/handbook/pushing)
+
+## Deploy
+
+Antes de poder desplegar una aplicación, es necesario disponer de la imagen Docker de dicha aplicación.
+
+En el directorio *ping_api* se ha dejado una pequeña aplicación para simular el proceso.
+
+1. Construir la imagen.
+    ```shell
+    cd ping_api
+    docker build -t {image_name:tag} .
+    ```
+2. Subir la imagen al registry de minikube.
+    ```shell
+    minikube image load {image_name:tag}
+    ```
+3. Crear el deployment.
+    ```shell
+    kubectl create deployment {deployment_name} --image={image_name:tag}
+    # verificar que se ha creado correctamente el deployment
+    kubectl get deployments {deployment_name}
+    ```
