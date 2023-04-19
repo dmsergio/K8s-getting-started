@@ -94,6 +94,28 @@ Cluster de Kubernetes en local, centrado para el aprendizaje y desarrollo.
     minikube delete --all
     ```
 
+### Comandos útiles
+
+```shell
+# Mostrar los clústers disponibles
+minikube profile list
+
+# Establecer clúster como activo
+minikube profile {cluster_name}
+
+# Establecer clúster por defecto
+minikube profile default
+
+# Interactuar sobre un clúster en concreto sin ser el actualmente activo
+minikube {action} -p {cluster_name}
+
+# Habilitar el autocompletado
+source <(minikube completion bash)
+
+# Eliminar un clúster en concreto
+minikube delete -p {cluster_name}
+```
+
 ### Referencias
 
 - [Controles básicos](https://minikube.sigs.k8s.io/docs/handbook/controls)
