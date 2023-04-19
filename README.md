@@ -105,6 +105,8 @@ Cluster de Kubernetes en local, centrado para el aprendizaje y desarrollo.
 - [Ingress DNS](https://minikube.sigs.k8s.io/docs/handbook/addons/ingress-dns)
 - [Subiendo imágenes](https://minikube.sigs.k8s.io/docs/handbook/pushing)
 
+---
+
 ## Deploy
 
 Antes de poder desplegar una aplicación, es necesario disponer de la imagen Docker de dicha aplicación.
@@ -127,6 +129,8 @@ En el directorio *ping_api* se ha dejado una pequeña aplicación para simular e
     kubectl get deployments {deployment_name}
     ```
 
+---
+
 ## Pods y Nodos
 
 Un **nodo** es una máquina (virtual o física, dependiendo del clúster) gestionado por el Control Plane de K8s. Dentro de cada nodo puede haber varios pods, el cual contendrá la aplicación contenerizada y (opcional) volúmenes.
@@ -139,10 +143,62 @@ Cada nodo ejecuta al menos:
     - Desempaquetal el contenedor.
     - Ejecutar la aplicación.
 
-Comandos útiles:
+### Comandos útiles
 
-- `kubectl get pods`
-- `kubectl describe pod {pod_name}`
-- `kubectl logs {pod_name}`
-- `kubectl exec {pod_name}` -- {command}
-- `kubectl exec -it {pod_name}` -- bash
+```shell
+# Obtener pods
+kubectl get pods
+
+# Mostrar información sobre un pod concreto
+kubectl describe pod {pod_name}
+
+# Visualizar los logs de un pod
+kubectl logs {pod_name}
+kubectl logs {pod_name} -f --tail 10
+
+# Ejecutar un comando dentro del pod
+kubectl exec {pod_name} -- {command}
+kubectl exec {pod_name} -- cat /etc/os-release
+kubectl exec -it {pod_name} -- bash  # inicia sesión bash dentro del pod
+```
+
+---
+
+## Servicios
+
+Se trata de una abstracción que define un conjunto lógico de pods y una política para acceder a ellos. Los servicios se definen en ficheros YAML o JSON.
+
+Aunque los pods tienen sus propias IPs, dichas IPs no son expuestas fuera del clúster sin un servicio. Los servicios permiten exponer las aplicaciones contenidas en los pods con tres **tipos** diferentes:
+
+- **ClusterIP** (por defecto): Expone el servicio en una IP interna del clúster. De esta manera el servicio será accesible únicamente dentro del clúster.
+
+- **NodePort**: Expone el servicio en el mismo nº de puerto indicado en el pod. Hace accesible el servicio fuera del clúster con <NodeIp>:<NodePort>.
+
+- **LoadBalancer**: Crea un load balancer y asigna una IP fija al servicio.
+
+- **ExternalName**: Mapea el servicio al contenido del campo `externalName`, retornando un registro `CNAME` con su valor.
+
+### Comandos útiles
+
+```shell
+# Obtener servicios
+kubectl get services
+
+# Exponer un servicio de tipo NodePort
+kubectl expose {deployment_name} --type="NodePort" --port {port_number}
+minikube service {service_name}
+
+# Exponer un servicio de tipo LoadBalancer
+minikube tunnel
+kubectl expose {deployment_name} --type="LoadBalancer" --port {port_number}
+
+# Ver información sobre el servicio
+kubectl describe {service_name}
+
+# Asignar un label a un pod
+kubectl label pods {pod_name} key=value
+
+# Eliminar un servicio
+kubectl delete service {service_name}
+kubectl delete service -l key=value  # eliminar en base al label
+```
