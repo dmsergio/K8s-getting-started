@@ -126,3 +126,23 @@ En el directorio *ping_api* se ha dejado una pequeña aplicación para simular e
     # verificar que se ha creado correctamente el deployment
     kubectl get deployments {deployment_name}
     ```
+
+## Pods y Nodos
+
+Un **nodo** es una máquina (virtual o física, dependiendo del clúster) gestionado por el Control Plane de K8s. Dentro de cada nodo puede haber varios pods, el cual contendrá la aplicación contenerizada y (opcional) volúmenes.
+
+Cada nodo ejecuta al menos:
+
+- **Kubelet**, el cual se encarga de gestionar el nodo con el Control Plane de K8s; el cual gestiona los pods y los contenedores corriendo dentro de la máquina.
+- **Contenedor runtime** (como Docker) responsable de:
+    - Bajarse la imagen del registry.
+    - Desempaquetal el contenedor.
+    - Ejecutar la aplicación.
+
+Comandos útiles:
+
+- `kubectl get pods`
+- `kubectl describe pod {pod_name}`
+- `kubectl logs {pod_name}`
+- `kubectl exec {pod_name}` -- {command}
+- `kubectl exec -it {pod_name}` -- bash
