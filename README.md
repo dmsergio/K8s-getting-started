@@ -202,3 +202,37 @@ kubectl label pods {pod_name} key=value
 kubectl delete service {service_name}
 kubectl delete service -l key=value  # eliminar en base al label
 ```
+
+---
+
+## Escalabilidad
+
+Escalando un deployment nos aseguramos de que los nuevos pods son creados y agendados a nodos con recursos disponibles.
+
+Al haber varias instancias de la aplicación repartidas en diferentes pods, debe haber una forma de gestionar la carga y distribuirla correctamente; aquí es donde entra en juego los servicio LoadBalancer, ya que internamente se encargan de redirigir el tráfico a pods disponibles.
+
+### Comandos
+
+```shell
+# Obtener deployments
+kubectl get deployments
+
+# Obtener réplicas
+kubectl get replicasets
+kubectl get rs
+
+# Escalar a x número de réplicas
+kubectl scale deployment {deployment_name} --replicas {more_number_of_replicas}
+# El anterior comando hará que se levantes x número de pods
+
+# Visualizar los pods con sus respectivas IPs
+kubectl get pods -o wide
+
+# Al mostrar la info del deployment, se visualizará el escalado realizado
+kubectl describe deployment {deployment_name}
+
+# Para comprobar el correcto funcionamiento, levantar el túnel de minikube y mostrar los logs de cada uno de los pods levantados. Al hacer la petición a un endpoint de la aplicación levantada, el propio balanceador redirigirá el tráfico al pod que vea oportuno.
+
+# Es posible escalar hacia abajo también
+kubectl scale deployment {deployment_name} --replicas {less_number_of_replicas}
+```
