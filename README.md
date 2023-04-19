@@ -236,3 +236,41 @@ kubectl describe deployment {deployment_name}
 # Es posible escalar hacia abajo también
 kubectl scale deployment {deployment_name} --replicas {less_number_of_replicas}
 ```
+
+---
+
+## Rolling Update (actualizar la versión de una App)
+
+```shell
+# Se crea una nueva versión de la imagen Docker
+docker build -t {image_name}:{new_tag_versioned} .
+
+# Se sube al registry de minikube
+minikube image laod {new_image_name}
+
+# Agregar la nueva imagen al deployment
+kubectl set image deployments/{deployment_name} {deployment_name}={image_name}
+
+# La anterior acción se encarga de levantar los nuevos pods (en función de las réplicas definidas en el escalado), una vez levantados, eliminar los anteriores, y por último actualizar el estado del ReplicaSet antiguo para indicar que no se espera ningún pod levantado por su parte. Todo ello se puede ver con
+kubectl get replicasets
+kubectl describe replicaset {old_replica_set}
+kubectl describe {new_pod}  # en el campo Image se debe visualizar la nueva imagen
+```
+
+### Rollback
+
+Imaginamos que se ha desplegado una imagen que contiene algún tipo de error, lo cual ocasiona que fallen los pods. Es posible volver al estado anterior funcional del deployment con el comando `kubectl rollout undo {deployment_name}`.
+
+```
+# Agregamos una imagen inexistente al desployment
+kubectl set image deployments/{deployment_name} {deployment_name}={image_name}
+
+# Al mostrar el estado de los pods se visualizará el estado ErrImagePull
+kubectl get pods
+
+# Al describir el pod fallido se mostrará más info sobre el problema ocurrido
+kubectl describe pod {pod_name}
+
+# Volver al último estado funciona conocido del deployment
+kubectl rollout undo deployment {deployment_name}
+```
