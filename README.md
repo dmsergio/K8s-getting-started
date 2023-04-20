@@ -283,7 +283,7 @@ kubectl describe {new_pod}  # en el campo Image se debe visualizar la nueva imag
 
 Imaginamos que se ha desplegado una imagen que contiene algún tipo de error, lo cual ocasiona que fallen los pods. Es posible volver al estado anterior funcional del deployment con el comando `kubectl rollout undo {deployment_name}`.
 
-```
+```shell
 # Agregamos una imagen inexistente al desployment
 kubectl set image deployments/{deployment_name} {deployment_name}={image_name}
 
@@ -295,4 +295,91 @@ kubectl describe pod {pod_name}
 
 # Volver al último estado funciona conocido del deployment
 kubectl rollout undo deployment {deployment_name}
+kubectl rollout undo deployment {deployment_name} --to-revision=1  # rollback a una revisión específica
+
+# También es posible visualizar el histórico de los deploy
+kubectl rollout history deployment {deployment_name}
+kubectl rollout history deployment {deployment_name} --revision={rev_number}  # visualiar una revisión específica
+
+# Al visualizar las ReplicaSet se podrá ver como se van creando en función de los despliegues que se vayan realizando
+```
+
+---
+
+## Object Model
+
+Fichero JSON o YAML en el cual se especifica de una forma declarativa el estado que se requiere de un objecto en cuestión. Un objeto puede ser:
+
+- Node
+- Namespaces
+- Pods
+- ReplicaSets
+- Deployments
+- DaemonSets
+- etc.
+
+### Pod
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.20.2
+    ports:
+      - containerPort: 80
+```
+
+Para crear un pod, es posible tanto crearlo a través del fichero de forma declarativa, o directamente indicando un nombre e imagen base.
+
+```shell
+# Usando el fichero yaml
+kubectl apply -f {pod.yaml}
+
+# Con la acción `run`
+kubectl run {pod_name} --image={image_name} --port={port}
+
+# Visualizar los pods
+kubectl get pods -o wide
+
+# También es posible crear un pod mezclando los dos métodos anteriores:
+# 1. Usando la acción `run` con el argumento -o para generar un nuevo fichero yaml
+kubectl run {pod_name} --image={image_name} --port={port} --dry-run=client -o yaml > {pod}.yaml
+# 2. Aplicando el nuevo fichero creado
+kubectl apply -f {pod.yaml}
+
+# Es posible corregir un pod actual (que esté corriendo o haya fallado por aluna razón) aplicando una nueva configuración
+kubectl replace --force -f {pod.yaml}
+
+# Eliminar pods
+kubectl delete pod {pod_name} ...
+kubectl delete -f {pod.yaml}
+```
+
+### Labels
+
+Los labels son usados para organizar diferentes objetos, con los cuáles pueden ser filtrados para realizar acciones a un conjunto específico de objetos.
+
+```yaml
+env: dev
+app: backend
+```
+
+---
+
+## Namespaces
+
+Permite "particionar" un clúster en sub-clústers. De esta manera es posible compartir un único clúster para diferentes propósitos y así aislar equipos de desarrollo y/o aplicaciones.
+
+### Comando útiles
+
+```shell
+# Obtener listado de namespaces
+kubectl get namespaces
+
+# Crear un nuevo namespace
+kubectl create namespace {new_namespace_name}
 ```
